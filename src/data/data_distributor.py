@@ -25,7 +25,6 @@ class Distributor:
     def distribute(self, data: DataContainer) -> Dict[int, DataContainer]:
         pass
 
-
 class DirichletDistributor(Distributor):
 
     def __init__(self, num_clients, num_labels, skewness=0.5):
