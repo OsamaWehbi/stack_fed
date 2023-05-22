@@ -220,6 +220,7 @@ def compute_p_opt(followers, leaders):
 def get_combinations(list1, list2):
     combinations = []
     for item in list1:
+        # leader1
         for combination in itertools.combinations(list2, item.c_q):
             combinations.append((item, *combination))
     return combinations

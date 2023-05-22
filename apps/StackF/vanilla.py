@@ -19,18 +19,22 @@ from src.federated.federated import FederatedLearning
 from src.federated.protocols import TrainerParams
 from src.federated.components.trainer_manager import SeqTrainerManager
 from src.federated.subscribers.sqlite_logger import SQLiteLogger
+from src.apis.extensions import Dict
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('main')
 
 clients = readexcel()
 client_data = preload('mnist', Stackdis(clients))
+client_slice = list(client_data.keys())
+client_slice = client_slice[0:51]
+sliced_dict = Dict({key: client_data[key] for key in client_slice})
 test = preload('mnist10k')
 
 # trainers configuration
 trainer_params = TrainerParams(
     trainer_class=trainers.TorchTrainer,
-    batch_size=50, epochs=10, optimizer='sgd',
+    batch_size=50, epochs=3, optimizer='sgd',
     criterion='cel', lr=0.1)
 
 # fl parameters
@@ -39,9 +43,9 @@ federated = FederatedLearning(
     trainer_config=trainer_params,
     aggregator=aggregators.AVGAggregator(),
     metrics=metrics.AccLoss(batch_size=50, criterion='cel'),
-    client_scanner=client_scanners.DefaultScanner(client_data),
-    client_selector=client_selectors.Random(0.39),
-    trainers_data_dict=client_data,
+    client_scanner=client_scanners.DefaultScanner(sliced_dict),
+    client_selector=client_selectors.All(),
+    trainers_data_dict=sliced_dict,
     test_data=test.as_tensor(),
     initial_model=lambda: LogisticRegression(28 * 28, 10),
     num_rounds=20,
@@ -57,7 +61,7 @@ federated.add_subscriber(SQLiteLogger(id=tab_id, db_path='ran.db'))
 federated.add_subscriber(fed_plots.RoundAccuracy(plot_ratio=0))
 
 logger.info("------------------------")
-logger.info("start federated learning")
+logger.info("start federated vanilla mnist")
 logger.info("------------------------")
 federated.start()
 dumb_db(tab_id=tab_id, file_path='ran.db')
