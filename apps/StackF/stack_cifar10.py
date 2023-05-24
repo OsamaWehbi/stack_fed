@@ -96,7 +96,7 @@ combinations, com_value = sorting_for_selec(combinations, com_value)
 # print(com_value)
 # print(combinations)
 
-selected = sel_fun(combinations)
+selected = sel_fun(combinations, leaders)
 
 for c in selected:
     logger.info(c.print_log())
@@ -119,7 +119,7 @@ federated = FederatedLearning(
     trainers_data_dict=clients_data,
     test_data=test.as_tensor(),
     initial_model=lambda: initialize_model,
-    num_rounds=5,
+    num_rounds=15,
     # accepted_accuracy_margin=0.05,
     desired_accuracy=0.99
 )

@@ -2,6 +2,7 @@ import sqlite3
 
 import sqlite3
 import pandas as pd
+from openpyxl import Workbook
 
 
 def print_db(file_path="../StackF/perf.db"):
@@ -44,3 +45,17 @@ def dumb_db(tab_id, file_path="../StackF/perf.db"):
     # Close the cursor and connection
     cursor.close()
     conn.close()
+
+
+def write_ds(clients):
+    # Create a new workbook and select the active sheet
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet['A1'] = 'Device'
+    sheet['B1'] = 'Ds'
+    for i, client in enumerate(clients):
+        # Write data to the sheet
+        sheet['A' + str(i + 1)] = str(client.c_id)
+        sheet['A' + str(i + 1)] = str(client.c_ds)
+    # Save the workbook to a file
+    workbook.save('ds.xlsx')

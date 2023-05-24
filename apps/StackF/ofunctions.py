@@ -259,19 +259,42 @@ def delete_tuples_with_objects(tuple_list, object_list):
     return updated_list
 
 
-def sel_fun(combinations):
+# def sel_fun(combinations, leaders):
+#     # hold the selected clients
+#     selected = []
+#     for com in combinations:
+#         if com[0].c_s != 1:
+#             com[0].c_s = 1
+#             selected.append(com[0])
+#             for follower in com[1:]:
+#                 follower.c_s = 1
+#                 selected.append(follower)
+#             # combinations = [com for com in combinations if not any(client in selected for client in com)]
+#         combinations = delete_tuples_with_objects(combinations, selected)
+#             # print("this is the new commm", combinations)
+#     return selected
+
+def sel_fun(combinations, leaders):
     # hold the selected clients
     selected = []
-    for com in combinations:
-        if com[0].c_s != 1:
-            com[0].c_s = 1
-            selected.append(com[0])
-            for follower in com[1:]:
-                follower.c_s = 1
-                selected.append(follower)
-            combinations = delete_tuples_with_objects(combinations, selected)
-            # print("this is the new commm", combinations)
+    temp = []
+    for _ in range(len(leaders)):
+        temp, combinations = inter_select(combinations)
+        selected += temp
+
     return selected
+
+def inter_select(combinations):
+    combinations = combinations
+    selected = []
+    if combinations[0][0].c_s != 1:
+        combinations[0][0].c_s = 1
+        selected.append(combinations[0][0])
+        for follower in combinations[0][1:]:
+            follower.c_s = 1
+            selected.append(follower)
+    combinations = delete_tuples_with_objects(combinations, selected)
+    return selected, combinations
 
 
 def sel_fun_opt(combinations):
@@ -294,6 +317,7 @@ def sel_fun_opt(combinations):
         combinations = [com for com in combinations if not any(client in selected for client in com)]
 
     return list(selected)
+
 
 def transfer_to_id_list(tuple_list):
     id_list = [(obj.c_id for obj in tup) for tup in tuple_list]

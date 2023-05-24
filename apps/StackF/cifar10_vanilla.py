@@ -54,24 +54,25 @@ def create_model(name):
 
 initialize_model = create_model('cnn')
 test = test['TEST']
-# client_slice = list(dis_data.keys())
-# client_slice = client_slice[0:51]
-# sliced_dict = Dict({key: dis_data[key] for key in client_slice})
+client_slice = list(dis_data.keys())
+client_slice = client_slice[49:99]
+sliced_dict = Dict({key: dis_data[key] for key in client_slice})
 
 # trainers configuration
 trainer_params = TrainerParams(trainer_class=trainers.TorchTrainer, batch_size=50, epochs=3, optimizer='sgd',
                                criterion='cel', lr=0.01)
-
+# 1 LEADER Q =2 , 1 * (2+1) = 3 / FOR VANILLA 3 * 100 / 5 = 60 PERCENTAGE
+# 2 LEADERS 1 =2, 2 * (2+1) = 6....
 federated = FederatedLearning(
     trainer_manager=SeqTrainerManager(),
     trainer_config=trainer_params,
     aggregator=aggregators.AVGAggregator(),
     metrics=metrics.AccLoss(batch_size=50, criterion=nn.CrossEntropyLoss()),
-    client_selector=client_selectors.Random(0.6),
-    trainers_data_dict=dis_data,
+    client_selector=client_selectors.All(),
+    trainers_data_dict=sliced_dict,
     test_data=test.as_tensor(),
     initial_model=lambda: initialize_model,
-    num_rounds=5,
+    num_rounds=1000,
     # accepted_accuracy_margin=0.05,
     desired_accuracy=0.99
 )
