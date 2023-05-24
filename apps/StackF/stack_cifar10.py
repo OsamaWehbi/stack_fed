@@ -5,7 +5,7 @@ from collections import defaultdict
 from torch import nn
 
 import libs.model.cv.cnn
-from apps.StackF.apis import dumb_db
+from apps.StackF.apis import dumb_db, final_val, write_ds
 from apps.StackF.distributor import Stackdis
 from apps.StackF.ofunctions import readexcel, dbscan, compute_com, gen_pay, compute_utility_follower, \
     compute_utility_leader, compute_p_opt, gen_pay_leader, get_combinations, com_final, sorting_for_selec, sel_fun, \
@@ -64,8 +64,9 @@ for i in clients:
 for client in clients:
     client.load(dis_data)
     client.compute_ds(total_nor)
-
+write_ds(clients)
 leaders, followers = dbscan(clients)
+
 logger.info("Dbscan results")
 print("leaders", len(leaders))
 for leader in leaders:
@@ -97,7 +98,7 @@ combinations, com_value = sorting_for_selec(combinations, com_value)
 # print(combinations)
 
 selected = sel_fun(combinations, leaders)
-
+final_val(selected)
 for c in selected:
     logger.info(c.print_log())
 

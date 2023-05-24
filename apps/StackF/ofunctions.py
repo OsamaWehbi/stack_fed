@@ -284,6 +284,7 @@ def sel_fun(combinations, leaders):
 
     return selected
 
+
 def inter_select(combinations):
     combinations = combinations
     selected = []
